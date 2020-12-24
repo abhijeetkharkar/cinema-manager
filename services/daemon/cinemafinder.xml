@@ -1,0 +1,31 @@
+<service>
+	<id>cinemafinder.exe</id>
+	<name>Cinema Finder</name>
+	<description>Finds video files in the machine and gets information for the movies using RapidApi. The output is stored to SQLite and is used by Cinema Manager</description>
+	<executable>C:\Users\Abhijeet Kharkar\AppData\Roaming\npm\node_modules\electron\dist\electron.exe</executable>
+	<argument>--harmony</argument>
+	<argument>E:\STUDY\PROJECTS\cinema-manager\node_modules\node-windows\lib\wrapper.js</argument>
+	<argument>--file</argument>
+	<argument>E:\STUDY\PROJECTS\cinema-manager\services\cinema-finder.service.js</argument>
+	<argument>--scriptoptions=</argument>
+	<argument>--log</argument>
+	<argument>Cinema Finder wrapper</argument>
+	<argument>--grow</argument>
+	<argument>0.25</argument>
+	<argument>--wait</argument>
+	<argument>1</argument>
+	<argument>--maxrestarts</argument>
+	<argument>3</argument>
+	<argument>--abortonerror</argument>
+	<argument>n</argument>
+	<argument>--stopparentfirst</argument>
+	<argument>undefined</argument>
+	<logmode>rotate</logmode>
+	<stoptimeout>30sec</stoptimeout>
+	<serviceaccount>
+		<domain>DESKTOP-63ECEOT</domain>
+		<user>LocalSystem</user>
+		<password></password>
+	</serviceaccount>
+	<workingdirectory>E:\STUDY\PROJECTS\cinema-manager</workingdirectory>
+</service>
