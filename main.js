@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron')
+const { app, BrowserWindow, ipcMain, screen, dialog } = require('electron')
 const url = require('url');
 const path = require('path');
 const serviceInstaller = require('./handlers/service-installation.handler');
@@ -12,8 +12,8 @@ const createWindow = async () => {
     serviceInstaller.installService((status, log) => {
         if (status) {
             mainWindow = new BrowserWindow({
-                width: 1600,
-                height: 1200,
+                width: width,
+                height: height,
                 webPreferences: {
                     nodeIntegration: true
                 },
@@ -71,6 +71,17 @@ const printServices = event => {
     event.returnValue = "";
 }
 
+const browseFolder = event => {
+    dialog.showOpenDialog({ title: 'Select a folder', properties: ['openDirectory'] }).then(folderPath => {
+        if (folderPath === undefined) {
+            console.log("You didn't select a folder");
+            event.returnValue = undefined;
+            return;
+        }
+        event.returnValue = folderPath.filePaths[0];
+    });
+}
+
 app.on('ready', createWindow)
 
 app.on('window-all-closed', () => {
@@ -86,5 +97,9 @@ ipcMain.on('checkInitialConfig', (event, _) => {
 })
 
 ipcMain.on('printServices', (event, arg) => {
-    printServices(event)
+    printServices(event);
+})
+
+ipcMain.on('browseFolder', (event, arg) => {
+    browseFolder(event);
 })
