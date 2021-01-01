@@ -39,7 +39,7 @@
     </div>
     <div id="custom-output" class="container-sub-section" *ngIf="selectedLookupPaths.length > 0">
         <sprk-stack>
-            <div sprkStackItem *ngFor="let lookupPath in selectedLookupPaths">{{lookupPath}}</div>
+            <div sprkStackItem *ngFor="let lookupPath of selectedLookupPaths">{{lookupPath}}</div>
         </sprk-stack>
     </div>
 </sprk-modal>

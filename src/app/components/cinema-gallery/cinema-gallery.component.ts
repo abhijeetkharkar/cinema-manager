@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IpcRenderer, remote } from 'electron';
+import { IpcRenderer } from 'electron';
 import { InitialConfig, Cinema } from '../../models/models';
 
 @Component({
@@ -51,21 +51,18 @@ export class CinemaGalleryComponent implements OnInit {
     }
 
     browse() {
-        /* if ((<any>window).require) {
-            try {
-                remote.dialog.showOpenDialog({ title: 'Select a folder', properties: ['openDirectory'] }).then(folderPath => {
-                    if (folderPath === undefined) {
-                        console.log("You didn't select a folder");
-                        return;
-                    }
-                    this.selectedLookupPaths.push(folderPath.filePaths[0]);
-                });
-            } catch (e) {
-                throw e;
+        console.log('browse called');
+        setTimeout(() => {
+            var folder = this.ipc.sendSync('browseFolder');
+            if (folder) {
+                this.selectedLookupPaths.push(folder);
+                this.alertType = undefined;
+                this.alertMessage = undefined;
+            } else {
+                this.alertType = 'fail';
+                this.alertMessage = 'You have not selected a folder';
             }
-        } else {
-            console.warn('App not running inside Electron!');
-        } */
+        }, 1000);
     }
 
     openSettings() {
@@ -75,7 +72,7 @@ export class CinemaGalleryComponent implements OnInit {
     confirmLookupFolders(event: any) {
         console.log(`confirmLookupFolders called, event: ${event}`);
         this.isFirstTime = false;
-        this.cinemas = this.ipc.sendSync('getCinemas');
+        // this.cinemas = this.ipc.sendSync('getCinemas');
     }
 
     cancelLookupFoldersModal(event: any) {
