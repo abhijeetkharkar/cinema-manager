@@ -70,9 +70,14 @@ export class CinemaGalleryComponent implements OnInit {
     }
 
     confirmLookupFolders(event: any) {
-        console.log(`confirmLookupFolders called, event: ${event}`);
-        this.isFirstTime = false;
-        // this.cinemas = this.ipc.sendSync('getCinemas');
+        console.log(`confirmLookupFolders called, event: `, event);
+        if (this.selectedLookupPaths.length !== 0) {
+            this.isFirstTime = false;
+            // this.cinemas = this.ipc.sendSync('getCinemas');
+        } else {
+            this.alertType = 'fail';
+            this.alertMessage = 'Please select atleast 1 folder';
+        }
     }
 
     cancelLookupFoldersModal(event: any) {
