@@ -1,0 +1,25 @@
+.container {
+  max-width: 100%;
+  height: 100%;
+}
+
+.sideNav {
+    width: 10rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+}
+
+.title {
+  align-self: center;
+  margin-top: 4rem;
+  margin-left: 2rem;
+}
+
+.cinemaGallery {
+    display: flex;
+    justify-content: center;
+}

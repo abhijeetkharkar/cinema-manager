@@ -1,8 +1,8 @@
-const chokidar = require('chokidar');
-const EventEmitter = require('events').EventEmitter;
-const fsExtra = require('fs-extra');
+const chokidar = require("chokidar");
+const EventEmitter = require("events").EventEmitter;
+const fsExtra = require("fs-extra");
 
-class Observer extends EventEmitter {
+class FolderWatcher extends EventEmitter {
   constructor() {
     super();
   }
@@ -13,28 +13,19 @@ class Observer extends EventEmitter {
         `[${new Date().toLocaleString()}] Watching for folder changes on: ${folder}`
       );
 
-      var watcher = chokidar.watch(folder, { persistent: true });
+      const watcher = chokidar.watch(folder, { persistent: true });
 
-      watcher.on('add', async filePath => {
-        if (filePath.includes('error.log')) {
-          console.log(
-            `[${new Date().toLocaleString()}] ${filePath} has been added.`
-          );
-
-          // Read content of new file
-          var fileContent = await fsExtra.readFile(filePath);
-
-          // emit an event when new file has been added
-          this.emit('file-added', {
-            message: fileContent.toString()
-          });
-
-          // remove file error.log
-          await fsExtra.unlink(filePath);
-          console.log(
-            `[${new Date().toLocaleString()}] ${filePath} has been removed.`
-          );
-        }
+      watcher.on("add", (filePath, stats) => {
+        this.emit("file-added", {
+          path: filePath,
+          stats: {
+            atime: stats.atime,
+            birthtime: stats.birthtime,
+            ctime: stats.ctime,
+            size: stats.size,
+            mode: stats.mode,
+          },
+        });
       });
     } catch (error) {
       console.log(error);
@@ -42,4 +33,4 @@ class Observer extends EventEmitter {
   }
 }
 
-module.exports = Observer;
+module.exports = FolderWatcher;

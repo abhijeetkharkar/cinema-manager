@@ -1,45 +1,48 @@
-<sprk-alert alertType="success" idString="alert-{{alertType}}-1" [isDismissible]="true" variant="success"
-    (dismissEvent)="dismissAlert()" *ngIf="alertMessage && alertType === 'success'">
-    {{alertMessage}}
-</sprk-alert>
+<ng-container *ngIf="!isFirstTime; else firstTime">
+  <div class="cinemas">
+    <cinema *ngFor="let cinema of cinemas" [cinema]="cinema"></cinema>
+  </div>
+</ng-container>
 
-<sprk-alert alertType="fail" idString="alert-{{alertType}}-1" [isDismissible]="true" variant="fail"
-    (dismissEvent)="dismissAlert()" *ngIf="alertMessage && alertType === 'fail'">
-    {{alertMessage}}
-</sprk-alert>
-
-<sprk-card class="cinema-manager-container" cardType="base" idString="card-highlighted-header"
-    additionalClasses="sprk-c-Card--standout" *ngIf="!isFirstTime">
-
-</sprk-card>
-
-<sprk-modal [(isVisible)]="isLoading" title="{{loadingMessage}}" modalType="wait" idString="modal-wait-1">
-    <div class="sprk-o-Stack__item sprk-c-Card__header sprk-o-Stack sprk-o-Stack--medium">
-        <h1 class="sprk-b-TypeDisplayFive sprk-o-Stack__item sprk-u-Color--white">{{title}}</h1>
-        <!-- <p id="cinema-manager-description" class="sprk-b-TypeDisplaySeven sprk-o-Stack__item sprk-u-Color--white"></p> -->
-        <sprk-icon class="cinema-manager-settings-filled" iconType="settings-filled" additionalClasses="sprk-c-Icon--l"
-            (click)="openSettings()">
-        </sprk-icon>
+<ng-template #firstTime>
+  <mat-card
+    *ngIf="isFirstTime || isManageLookupFoldersClicked"
+    class="configuration"
+  >
+    <div class="buttons">
+      <button mat-flat-button color="primary" (click)="browse()">
+        <mat-icon aria-hidden="false" aria-label="Settings Icon"
+          >settings</mat-icon
+        >
+        Add Lookup Paths
+      </button>
+      <div class="buttons__finalize">
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="finishAddingLookupPaths()"
+        >
+          Finish
+        </button>
+      </div>
     </div>
-
-    <div class="sprk-o-Stack__item sprk-o-Stack sprk-o-Stack--medium sprk-c-Card__content">
-        <div class="container-section">
-
-        </div>
+    <div class="lookupPathsContainer" *ngIf="selectedLookupPaths.length > 0">
+      <h3 class="lookupPathsContainer__title">Your selected lookup paths:</h3>
+      <div
+        *ngFor="let lookupPath of selectedLookupPaths; let i = index"
+        class="lookupPaths"
+      >
+        <p class="mat-body-1 lookupPaths__text">{{ lookupPath }}</p>
+        <button
+          mat-button
+          class="lookupPaths__button"
+          color="warn"
+          aria-label="Example icon button with a filter list icon"
+          (click)="removeFromLookupPaths(i)"
+        >
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </div>
     </div>
-</sprk-modal>
-
-<sprk-modal [(isVisible)]="isFirstTime || isManageLookupFoldersClicked" title="Manage Lookup Folders" modalType="choice"
-    idString="modal-choice-1" (confirmClick)="confirmLookupFolders($event)"
-    (cancelClick)="cancelLookupFoldersModal($event)" (hide)="hideLookupFoldersModal()">
-    <div id="custom-output" class="container-sub-section">
-        <sprk-icon class="cinema-manager-organize-filled" iconType="organize-filled" additionalClasses="sprk-c-Icon--l"
-            (click)="browse()">
-        </sprk-icon>
-    </div>
-    <div id="custom-output" class="container-sub-section" *ngIf="selectedLookupPaths.length > 0">
-        <sprk-stack>
-            <div sprkStackItem *ngFor="let lookupPath of selectedLookupPaths">{{lookupPath}}</div>
-        </sprk-stack>
-    </div>
-</sprk-modal>
+  </mat-card>
+</ng-template>

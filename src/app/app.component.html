@@ -1,1 +1,58 @@
-<cinema-gallery></cinema-gallery>
+<mat-sidenav-container class="container">
+  <mat-sidenav
+    #sidenav
+    class="sideNav"
+    mode="side"
+    [(opened)]="opened"
+    (opened)="events.push('open!')"
+    (closed)="events.push('close!')"
+  >
+    <button
+      mat-icon-button
+      class="example-icon"
+      aria-label="Example icon-button with menu icon"
+      (click)="sidenav.toggle()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="header">
+      <button
+        mat-icon-button
+        *ngIf="!opened"
+        class="example-icon"
+        aria-label="Example icon-button with menu icon"
+        (click)="sidenav.toggle()"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      <h1 class="mat-headline-3 title">Cinema Manager</h1>
+      <button
+        mat-icon-button
+        class="example-icon favorite-icon"
+        aria-label="Example icon-button with heart icon"
+      >
+        <mat-icon>favorite</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        class="example-icon"
+        aria-label="Example icon-button with share icon"
+      >
+        <mat-icon>share</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <cinema-gallery class="cinemaGallery"></cinema-gallery>
+    <!-- <p><mat-checkbox [(ngModel)]="opened">sidenav.opened</mat-checkbox></p>
+    <p>
+      <button mat-button (click)="sidenav.toggle()">sidenav.toggle()</button>
+    </p>
+    <p>Events:</p>
+    <div class="example-events">
+      <div *ngFor="let e of events">{{ e }}</div>
+    </div> -->
+  </mat-sidenav-content>
+</mat-sidenav-container>

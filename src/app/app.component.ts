@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IpcRenderer } from 'electron';
 
 @Component({
@@ -7,7 +7,9 @@ import { IpcRenderer } from 'electron';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  private ipc: IpcRenderer;
+  events: string[] = [];
+  opened = true;
+  private ipc!: IpcRenderer;
 
   constructor() {
     if ((<any>window).require) {

@@ -1,97 +1,123 @@
 import { Component, OnInit } from '@angular/core';
 import { IpcRenderer } from 'electron';
-import { InitialConfig, Cinema } from '../../models/models';
+import { InitialConfig } from '../../models/initial-config.interface';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfigurationDialog } from '../configuration-dialog/configuration-dialog.component';
+import {
+  MatSnackBar,
+  MatSnackBarConfig,
+  MatSnackBarRef,
+  TextOnlySnackBar,
+} from '@angular/material/snack-bar';
+import { Cinema } from 'src/app/models/cinema.interface';
 
 @Component({
-    selector: 'cinema-gallery',
-    templateUrl: './cinema-gallery.component.html',
-    styleUrls: ['./cinema-gallery.component.scss']
+  selector: 'cinema-gallery',
+  templateUrl: './cinema-gallery.component.html',
+  styleUrls: ['./cinema-gallery.component.scss'],
 })
 export class CinemaGalleryComponent implements OnInit {
-    title = 'Cinema Gallery';
-    description = '';
+  private readonly SNACKBAR_CONFIG: MatSnackBarConfig<any> = {
+    verticalPosition: 'top',
+    horizontalPosition: 'center',
+  };
 
-    isLoading = true;
-    loadingMessage: string = '';
+  title = 'Cinema Gallery';
+  description = '';
 
-    alertType: ('success' | 'fail' | 'info') = undefined;
-    alertMessage: string = undefined;
+  isLoading = true;
+  loadingMessage: string = '';
 
-    isFirstTime = false;
-    isManageLookupFoldersClicked = false;
-    selectedLookupPaths: string[] = [];
-    cinemas: Cinema[] = [];
+  isFirstTime = false;
+  isManageLookupFoldersClicked = false;
+  selectedLookupPaths: string[] = ['C:\\Users\\Abhijeet', 'C:\\Users\\Wakdya'];
+  cinemas: Cinema[] = [];
 
-    private ipc: IpcRenderer;
-    constructor() {
-        if ((<any>window).require) {
-            try {
-                this.ipc = (<any>window).require('electron').ipcRenderer;
-            } catch (e) {
-                throw e;
-            }
-        } else {
-            console.warn('App not running inside Electron!');
-        }
+  snackBarReference!: MatSnackBarRef<TextOnlySnackBar>;
+
+  private ipc!: IpcRenderer;
+  constructor(private dialog: MatDialog, private snackBar: MatSnackBar) {
+    if ((<any>window).require) {
+      try {
+        this.ipc = (<any>window).require('electron').ipcRenderer;
+      } catch (e) {
+        throw e;
+      }
+    } else {
+      console.warn('App not running inside Electron!');
     }
+  }
 
-    ngOnInit(): void {
-        console.log('Cinema Gallery initialized');
-        this.loadingMessage = 'Loading Application';
-        setTimeout(() => {
-            var initialConfig: InitialConfig = this.ipc.sendSync('checkInitialConfig');
-            var initialConfig: InitialConfig = { status: false, lookupPaths: undefined }
-            this.isLoading = false;
-            if (!initialConfig.status) {
-                this.isFirstTime = true;
-            } else {
-                // this.cinemas = this.ipc.sendSync('getCinemas');
-            }
-        }, 1000);
-    }
-
-    browse() {
-        console.log('browse called');
-        setTimeout(() => {
-            var folder = this.ipc.sendSync('browseFolder');
-            if (folder) {
-                this.selectedLookupPaths.push(folder);
-                this.alertType = undefined;
-                this.alertMessage = undefined;
-            } else {
-                this.alertType = 'fail';
-                this.alertMessage = 'You have not selected a folder';
-            }
-        }, 1000);
-    }
-
-    openSettings() {
-        this.isManageLookupFoldersClicked = true;
-    }
-
-    confirmLookupFolders(event: any) {
-        console.log(`confirmLookupFolders called, event: ${event}`);
-        this.isFirstTime = false;
-        // this.cinemas = this.ipc.sendSync('getCinemas');
-    }
-
-    cancelLookupFoldersModal(event: any) {
-        console.log(`cancelLookupFoldersModal called, event: ${event}`);
+  ngOnInit(): void {
+    console.log('Cinema Gallery initialized');
+    setTimeout(() => {
+      const initialConfig: InitialConfig = this.ipc.sendSync(
+        'check-initial-config'
+      );
+      /* const initialConfig: InitialConfig = {
+        status: false,
+        lookupPaths: undefined,
+      }; */
+      if (!initialConfig.status) {
         this.isFirstTime = true;
-    }
+        /* this.dialog.open(ConfigurationDialog, {
+          width: '250px',
+          enterAnimationDuration: '50',
+          exitAnimationDuration: '50',
+        }); */
+        /* this.snackBarReference = this.snackBar.open(
+          'You have not selected a folder',
+          'Dismiss',
+          this.SNACKBAR_CONFIG
+        );
+        this.snackBarReference.afterDismissed().subscribe(() => {
+          console.log('The snackbar was dismissed!');
+        }); */
+      } else {
+        this.cinemas = this.ipc.sendSync('get-cinemas');
+      }
+    }, 1000);
+  }
 
-    hideLookupFoldersModal() {
-        console.log(`hideLookupFoldersModal called, event: ${event}`);
-        this.isFirstTime = true;
-    }
+  browse() {
+    console.log('browse called');
+    setTimeout(() => {
+      const folder = this.ipc.sendSync('browse-folder');
+      if (folder) {
+        this.selectedLookupPaths.push(folder);
+        this.snackBar.open(
+          'Lookup Path Added',
+          'Dismiss',
+          this.SNACKBAR_CONFIG
+        );
+      } else {
+        this.snackBar.open(
+          'Failed to add lookup path',
+          'Dismiss',
+          this.SNACKBAR_CONFIG
+        );
+      }
+    }, 1000);
+  }
 
-    dismissAlert() {
-        this.alertMessage = undefined;
-        this.alertType = undefined;
-    }
+  openSettings() {
+    this.isManageLookupFoldersClicked = true;
+  }
 
-    public printServices() {
-        console.log("Print Services Called");
-        this.ipc.sendSync("printServices");
-    }
+  finishAddingLookupPaths() {
+    console.log('finishAddingLookupPaths called');
+    setTimeout(() => {
+      this.cinemas = this.ipc.sendSync('get-cinemas');
+      this.isFirstTime = false;
+    }, 1000);
+  }
+
+  removeFromLookupPaths(index: number) {
+    this.selectedLookupPaths.splice(index, 1);
+  }
+
+  public printServices() {
+    console.log('Print Services Called');
+    this.ipc.sendSync('printServices');
+  }
 }
